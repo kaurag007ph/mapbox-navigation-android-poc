@@ -59,20 +59,16 @@ export class MapboxNavigation extends StackLayout {
                             this.start(point)
                         }
                     }))
-                    let target = new com.mapbox.mapboxsdk.geometry.LatLng(14.52348788, 121.0546267);                    
+                    let target = new com.mapbox.mapboxsdk.geometry.LatLng(14.5176184, 121.0508645);                    
                     let cameraPosition = new com.mapbox.mapboxsdk.camera.CameraPosition.Builder()
                         .target(target)
                         .zoom(14)
                         .build();
 
                     this.mapView.mapboxMap.moveCamera(com.mapbox.mapboxsdk.camera.CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                    // this.mapView.mapboxMap.moveCamera(cameraPosition)
-                    setTimeout(() => {
-                        let origin = com.mapbox.services.commons.models.Position.fromCoordinates(-95.75188, 29.78533)
-                        let destination = com.mapbox.services.commons.models.Position.fromCoordinates(-95.71892, 29.77516)
-                        this.getRoute(origin, destination)
-                    }, 5000)
+                    let origin = com.mapbox.services.commons.models.Position.fromCoordinates(121.0508645, 14.5176184)
+                    let destination = com.mapbox.services.commons.models.Position.fromCoordinates(121.05410099, 14.52225194)
+                    this.getRoute(origin, destination)
                 },
                 onFailure: (error) => {
                   console.log(error)
@@ -94,7 +90,7 @@ export class MapboxNavigation extends StackLayout {
             .setAccessToken(com.mapbox.mapboxsdk.Mapbox.getAccessToken())
             .setCoordinates(positions)
             .setProfile(com.mapbox.services.api.directions.v5.DirectionsCriteria.PROFILE_DRIVING)
-            .setSteps(true)            
+            .setSteps(new java.lang.Boolean("True"))            
             .setOverview(com.mapbox.services.api.directions.v5.DirectionsCriteria.OVERVIEW_FULL)
             .build();
 
@@ -127,6 +123,27 @@ export class MapboxNavigation extends StackLayout {
             }
         }));
         
+    }
+
+    public previousStep() {
+        if (stepCount <= 0) {
+          android.widget.Toast.makeText(application.android.context, "On first step already", android.widget.Toast.LENGTH_SHORT).show();
+          return;
+        }
+        
+        stepCount--;
+
+        this.drawStepPolyline();
+    }   
+
+    public nextStep() {
+        if (this.currentRoute.getLegs().get(0).getSteps().size() - 1 <= stepCount) {
+          android.widget.Toast.makeText(application.android.context, "On last step already", android.widget.Toast.LENGTH_SHORT).show();
+          return;
+        }
+        stepCount++;
+
+        this.drawStepPolyline();
     }
 
     private drawStepPolyline() {
@@ -175,7 +192,7 @@ export class MapboxNavigation extends StackLayout {
         let lineLatLng = new java.util.ArrayList();
 
         for (let i = 0; i < linePositions.size(); i++) {
-            lineLatLng.add(new com.mapbox.mapboxsdk.geometry.LatLng(linePositions(i).getLatitude(), linePositions(i).getLongitude()));
+            lineLatLng.add(new com.mapbox.mapboxsdk.geometry.LatLng(linePositions.get(i).getLatitude(), linePositions.get(i).getLongitude()));
         }
 
         this.distanceRoutePolyline = this.mapView.mapboxMap.addPolyline(new com.mapbox.mapboxsdk.annotations.PolylineOptions()
@@ -191,8 +208,6 @@ export class MapboxNavigation extends StackLayout {
 
         let points = new java.util.ArrayList();
 
-        console.log('coordinates size:' + coordinates.size())
-        console.log('Points: ' + points)        
         for (let i = 0; i < coordinates.size(); i++) {
             points.add(new com.mapbox.mapboxsdk.geometry.LatLng(coordinates.get(i).getLatitude(), coordinates.get(i).getLongitude()));
         }
@@ -205,7 +220,6 @@ export class MapboxNavigation extends StackLayout {
     }
 
     private start(point) {
-        console.log('point', point)
         if (this.userLocation) {
             this.mapView.mapboxMap.removeMarker(this.userLocation);
         }
@@ -213,18 +227,12 @@ export class MapboxNavigation extends StackLayout {
             this.mapView.mapboxMap.removeMarker(this.snappedLocation);
         }
 
-        console.log('Here 0')
         this.userLocation = this.mapView.mapboxMap.addMarker(new com.mapbox.mapboxsdk.annotations.MarkerOptions().setPosition(point));
-
-        console.log('Here 1')
-        console.log(this.currentRoute.getLegs().get(0))
         let snappedPosition = com.mapbox.services.android.navigation.v5.RouteUtils.getSnapToRoute(
             com.mapbox.services.commons.models.Position.fromCoordinates(point.getLongitude(), point.getLatitude()), this.currentRoute.getLegs().get(0), stepCount
         );
 
-        console.log('Here 2')
         if (snappedPosition == null) {
-            console.log('snapPosition is null');
             return;
         }
 
@@ -269,6 +277,6 @@ export class MapboxNavigation extends StackLayout {
 
 const _getMapboxMapOptions = (settings) => {
   const mapboxMapOptions = new com.mapbox.mapboxsdk.maps.MapboxMapOptions()
-      .styleUrl(com.mapbox.mapboxsdk.constants.Style.MAPBOX_STREETS)    
+      .styleUrl(com.mapbox.mapboxsdk.constants.Style.DARK)    
   return mapboxMapOptions;
 };
