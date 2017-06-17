@@ -20,6 +20,8 @@
         }
     },
     "exclude": [
+        "typings/i386",
+        "typings/x86_64",
         "node_modules",
         "platforms",
         "**/*.aot.ts"

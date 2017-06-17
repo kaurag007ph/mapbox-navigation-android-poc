@@ -7,7 +7,7 @@ import { ItemService } from "./item/item.service";
 import { ItemsComponent } from "./item/items.component";
 import { ItemDetailComponent } from "./item/item-detail.component";
 import { registerElement } from 'nativescript-angular';
-import { MapboxNavigation } from './mapbox-navigation-android'
+import { MapboxNavigation } from './mapbox-navigation-ios'
 
 registerElement('MapboxNavigation', () => MapboxNavigation)
 

@@ -1,0 +1,9 @@
+{
+  "name": "mapbox-navigation",
+  "version": "0.0.1",
+  "nativescript": {
+    "platforms": {
+      "ios": "2.5.1"
+    }
+  }
+}
