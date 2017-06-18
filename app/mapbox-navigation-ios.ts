@@ -34,7 +34,7 @@ export class MapboxNavigation extends StackLayout {
             console.log('Routes', routes)
             console.log('Error', error)
                 if (routes) {
-                    let route = routes.first
+                    let route = routes[0]
                     this._navigation = MBNavigationViewController(route)
                     rootVC().presentViewControllerAnimatedCompletion(this._navigation, true, null)
                 }
@@ -44,6 +44,6 @@ export class MapboxNavigation extends StackLayout {
 }
 
 const rootVC = function() {
-    let appWindow = UIAplication.sharedApplication.keyWindow
+    let appWindow = UIApplication.sharedApplication.keyWindow
     return appWindow.rootViewController
 }
